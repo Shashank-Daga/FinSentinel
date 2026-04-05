@@ -25,7 +25,7 @@ public class Transaction extends BaseEntity{
     private String location;
     private String deviceId;
     private String merchantCategory;
-    private String transactionCategory;
+    private String transactionType;
     private String status;
     private Double riskScore;
     private LocalDateTime transactionTime = LocalDateTime.now();
