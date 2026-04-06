@@ -2,6 +2,7 @@ package com.finsentinel.service.impl;
 
 import com.finsentinel.dto.TransactionRequestDTO;
 import com.finsentinel.dto.TransactionResponseDTO;
+import com.finsentinel.fraud.FraudDetectionService;
 import com.finsentinel.model.Transaction;
 import com.finsentinel.model.User;
 import com.finsentinel.repository.TransactionRepository;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 public class TransactionServiceImpl implements TransactionService{
     private final UserRepository userRepository;
     private final TransactionRepository transactionRepository;
+    private final FraudDetectionService fraudDetectionService;
 
     public TransactionResponseDTO processTransaction(TransactionRequestDTO request){
         User user = userRepository.findByAccountNumber(request.getAccountNumber())
@@ -34,6 +36,7 @@ public class TransactionServiceImpl implements TransactionService{
                 .build();
 
         Transaction saved = transactionRepository.save(transaction);
+        fraudDetectionService.analyzeTransaction(saved);
 
         return TransactionResponseDTO.builder()
                 .transactionId(saved.getId())
