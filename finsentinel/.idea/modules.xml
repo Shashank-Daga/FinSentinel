@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/finsentinel.iml" filepath="$PROJECT_DIR$/.idea/finsentinel.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../finsentinel-ML/finsentinel-ML.iml" filepath="$PROJECT_DIR$/../finsentinel-ML/finsentinel-ML.iml" />
     </modules>
   </component>
 </project>

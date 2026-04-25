@@ -8,6 +8,6 @@ public class TransactionRequestDTO {
     private Double amount;
     private String location;
     private String deviceId;
-    private String merchantId;
+    private String merchantCategory;
     private String transactionType;
 }

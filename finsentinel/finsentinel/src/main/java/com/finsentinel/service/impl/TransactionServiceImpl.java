@@ -29,7 +29,7 @@ public class TransactionServiceImpl implements TransactionService{
                 .amount(request.getAmount())
                 .location(request.getLocation())
                 .deviceId(request.getDeviceId())
-                .merchantCategory(request.getMerchantId())
+                .merchantCategory(request.getMerchantCategory())
                 .transactionType(request.getTransactionType())
                 .status("PENDING")
                 .riskScore(0.0)
