@@ -16,13 +16,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class TransactionServiceImpl implements TransactionService{
     private final UserRepository userRepository;
-    private final TransactionRepository transactionRepository;
     private final FraudDetectionService fraudDetectionService;
 
+    @Override
     public TransactionResponseDTO processTransaction(TransactionRequestDTO request){
         User user = userRepository.findByAccountNumber(request.getAccountNumber())
-                .orElseThrow(() ->
-                        new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         Transaction transaction = Transaction.builder()
                 .user(user)
@@ -31,17 +30,18 @@ public class TransactionServiceImpl implements TransactionService{
                 .deviceId(request.getDeviceId())
                 .merchantCategory(request.getMerchantCategory())
                 .transactionType(request.getTransactionType())
+                .ipAddress(request.getIpAddress())
+                .deviceType(request.getDeviceType())
                 .status("PENDING")
                 .riskScore(0.0)
                 .build();
 
-        Transaction saved = transactionRepository.save(transaction);
-        fraudDetectionService.analyzeTransaction(saved);
+        Transaction analyzed = fraudDetectionService.analyzeTransaction(transaction);
 
         return TransactionResponseDTO.builder()
-                .transactionId(saved.getId())
-                .status(saved.getStatus())
-                .riskScore(saved.getRiskScore())
+                .transactionId(analyzed.getId())
+                .status(analyzed.getStatus())
+                .riskScore(analyzed.getRiskScore())
                 .build();
     }
 }

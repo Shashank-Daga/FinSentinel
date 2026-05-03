@@ -10,4 +10,7 @@ public class TransactionRequestDTO {
     private String deviceId;
     private String merchantCategory;
     private String transactionType;
+
+    private String ipAddress;
+    private String deviceType;
 }

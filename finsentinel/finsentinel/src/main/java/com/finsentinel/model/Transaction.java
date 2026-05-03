@@ -5,7 +5,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.*;
-import org.springframework.data.repository.cdi.Eager;
 
 import java.time.LocalDateTime;
 
@@ -29,4 +28,7 @@ public class Transaction extends BaseEntity{
     private String status;
     private Double riskScore;
     private LocalDateTime transactionTime = LocalDateTime.now();
+
+    private String ipAddress;
+    private String deviceType;
 }

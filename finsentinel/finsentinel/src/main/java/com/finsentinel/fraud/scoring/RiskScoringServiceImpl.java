@@ -1,5 +1,6 @@
 package com.finsentinel.fraud.scoring;
 
+import com.finsentinel.fraud.behaviour.BehaviourAnalysisService;
 import com.finsentinel.fraud.ml.MLPredictionService;
 import com.finsentinel.fraud.rules.FraudRuleEvaluator;
 import com.finsentinel.model.Transaction;
@@ -16,14 +17,18 @@ public class RiskScoringServiceImpl implements RiskScoringService {
 
     private final List<FraudRuleEvaluator> evaluators;
     private final MLPredictionService mlPredictionService;
+    private final BehaviourAnalysisService behaviourAnalysisService;
 
     @Override
     public double calculateRisk(Transaction transaction){
-        double ruleRisk = evaluators.stream().mapToDouble(e -> e.evaluate(transaction)).sum();
+        double ruleRisk = evaluators.stream()
+                .mapToDouble(e -> e.evaluate(transaction)).sum();
 
         // Placeholder ML risk (future model)
         double mlRisk = mlPredictionService.getFraudProbability(transaction) * 100;
 
-        return ruleRisk + mlRisk;
+        double behaviourRisk = behaviourAnalysisService.analyzeBehaviour(transaction);
+
+        return ruleRisk + mlRisk + behaviourRisk;
     }
 }
