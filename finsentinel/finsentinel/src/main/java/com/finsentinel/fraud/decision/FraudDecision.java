@@ -7,7 +7,6 @@ import lombok.Getter;
 @Data
 @AllArgsConstructor
 public class FraudDecision {
-
     @Getter
     private boolean fraud;
     private String status;
