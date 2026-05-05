@@ -1,6 +1,8 @@
 package com.finsentinel.fraud;
 
 import com.finsentinel.alert.FraudAlertService;
+import com.finsentinel.event.FraudEvent;
+import com.finsentinel.event.FraudEventPublisher;
 import com.finsentinel.fraud.decision.FraudDecision;
 import com.finsentinel.fraud.decision.FraudDecisionEngine;
 import com.finsentinel.fraud.scoring.RiskScoringService;
@@ -18,6 +20,7 @@ public class FraudDetectionServiceImpl implements FraudDetectionService {
     private final FraudDecisionEngine decisionEngine;
     private final TransactionRepository transactionRepository;
     private final FraudAlertService fraudAlertService;
+    private final FraudEventPublisher eventPublisher;
 
     @Override
     @Transactional
@@ -37,6 +40,17 @@ public class FraudDetectionServiceImpl implements FraudDetectionService {
                     decision.getConfidence()
             );
         }
+
+        FraudEvent event = FraudEvent.builder()
+                .transactionID(transaction.getId())
+                .userId(String.valueOf(transaction.getUser().getId()))
+                .amount(transaction.getAmount())
+                .decision(decision.getStatus())
+                .riskscore(riskScore)
+                .timestamp(System.currentTimeMillis())
+                .build();
+
+        eventPublisher.publish(event);
 
         return transactionRepository.save(transaction);
     }
