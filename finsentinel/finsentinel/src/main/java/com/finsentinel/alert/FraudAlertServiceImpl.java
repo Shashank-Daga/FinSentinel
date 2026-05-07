@@ -4,6 +4,7 @@ import com.finsentinel.model.FraudAlert;
 import com.finsentinel.model.Transaction;
 import com.finsentinel.model.enums.AlertStatus;
 import com.finsentinel.repository.FraudAlertRepository;
+import com.finsentinel.stream.EventPublisher;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import java.util.List;
 @Service
 public class FraudAlertServiceImpl implements FraudAlertService{
     private final FraudAlertRepository alertRepository;
+    private final EventPublisher<FraudAlert> alertPublisher;
 
     @Override
     public FraudAlert createAlert(Transaction tx, String type, String reason, double confidence){
@@ -26,7 +28,13 @@ public class FraudAlertServiceImpl implements FraudAlertService{
                 .priority(resolvePriority(confidence))
                 .build();
 
-        return alertRepository.save(alert);
+        // Save Event
+        FraudAlert saved = alertRepository.save(alert);
+
+        // Publish Event
+        alertPublisher.publish(saved);
+
+        return saved;
     }
 
     private String resolvePriority(double confidence){

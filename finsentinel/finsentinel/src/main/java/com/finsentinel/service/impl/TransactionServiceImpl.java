@@ -2,13 +2,13 @@ package com.finsentinel.service.impl;
 
 import com.finsentinel.dto.TransactionRequestDTO;
 import com.finsentinel.dto.TransactionResponseDTO;
-import com.finsentinel.fraud.FraudDetectionService;
 import com.finsentinel.model.Transaction;
 import com.finsentinel.model.User;
 import com.finsentinel.repository.TransactionRepository;
 import com.finsentinel.repository.UserRepository;
 import com.finsentinel.service.TransactionService;
 
+import com.finsentinel.stream.EventPublisher;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +16,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class TransactionServiceImpl implements TransactionService{
     private final UserRepository userRepository;
-    private final FraudDetectionService fraudDetectionService;
+    private final TransactionRepository transactionRepository;
+    private final EventPublisher<Transaction> transactionPublisher;
 
     @Override
     public TransactionResponseDTO processTransaction(TransactionRequestDTO request){
@@ -36,12 +37,17 @@ public class TransactionServiceImpl implements TransactionService{
                 .riskScore(0.0)
                 .build();
 
-        Transaction analyzed = fraudDetectionService.analyzeTransaction(transaction);
+        // Save event
+        Transaction saved = transactionRepository.save(transaction);
 
+        // Publish Event
+        transactionPublisher.publish(saved);
+
+        // ✅ Immediate response (async processing now)
         return TransactionResponseDTO.builder()
-                .transactionId(analyzed.getId())
-                .status(analyzed.getStatus())
-                .riskScore(analyzed.getRiskScore())
+                .transactionId(saved.getId())
+                .status(saved.getStatus())
+                .riskScore(saved.getRiskScore())
                 .build();
     }
 }
